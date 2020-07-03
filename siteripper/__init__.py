@@ -8,6 +8,19 @@ class SiteRipper:
     def __init__(self):
         pass
 
+def _strip_http_only(domain):
+    if domain.startswith('#HttpOnly_'):
+        domain = domain[10:]
+    return(domain)
+    
+def _parse_cookies_file():
+    cfg = read_config()
+    with open(cfg['general']['cookie-file'], "r") as f:
+        ck_file = f.read().strip()
+    cookie_lines = [c.split('\t') for c in ck_file.split('\n')]
+    return [(_strip_http_only(cl[0]), cl[5], cl[6]) for cl in cookie_lines[4:]]
+
+
 def get_auth_for_url(url):
     """Returns (username, password) tuple if configuration for host exists.
     Else returns None"""
@@ -23,10 +36,8 @@ def get_auth_for_url(url):
 
 def get_cookies_for_url(url):
     cfg = read_config()
-    ns_cookiejar = MozillaCookieJar()
-    ns_cookiejar.load(cfg['general']['cookie-file'], ignore_discard=True)
     o = urlparse(url)
-    return {x.name: x.value for x in ns_cookiejar if o.netloc.endswith(x.domain)}
+    return {name: value for (d, name, value) in _parse_cookies_file() if o.netloc.endswith(d)}
     
 
 def read_config():
