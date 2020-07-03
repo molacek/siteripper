@@ -8,7 +8,7 @@ def get(url, filename=None):
     # Read config
     cfg = siteripper.read_config()
 
-    wget_params = ["wget"]
+    wget_params = ["wget", "--user-agent", cfg["general"]["user-agent"]]
 
     # Use cookie file
     if "cookie-file" in cfg["general"]:
