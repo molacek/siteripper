@@ -18,7 +18,7 @@ class BsRequest:
             print(f"BsRequest: {label}")
             print(value)
 
-    def get(self, url):
+    def get(self, url, allow_redirects=True):
         self.session.auth = siteripper.get_auth_for_url(url)
         cookies = siteripper.get_cookies_for_url(url)
 
@@ -27,7 +27,7 @@ class BsRequest:
 
         self.session.headers.update({"referer": self.referer})
         self._debug_msg("Headers", self.session.headers)
-        r = self.session.get(url, cookies=cookies)
+        r = self.session.get(url, cookies=cookies, allow_redirects=allow_redirects)
         self._debug_msg("Respose status code", r.status_code)
         self.referer = url
 
